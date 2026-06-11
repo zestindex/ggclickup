@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experience Task Templates · Overview</title>
+<style>
+  :root { --navy:#1a2b4a; --blue:#2563eb; --light-blue:#eff6ff; --border:#e5e7eb; --gray:#6b7280; --gray-light:#f9fafb; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:Arial,sans-serif; color:var(--navy); background:white; padding:2.5rem; line-height:1.6; max-width:900px; margin:0 auto; }
+  h1 { font-size:1.5rem; margin-bottom:0.25rem; }
+  .subtitle { color:var(--gray); font-size:0.88rem; margin-bottom:2rem; padding-bottom:1rem; border-bottom:2px solid var(--navy); }
+  h2 { font-size:1rem; font-weight:700; margin:1.75rem 0 0.75rem; text-transform:uppercase; letter-spacing:0.05em; font-size:0.78rem; color:var(--gray); }
+  p { font-size:0.88rem; margin-bottom:0.75rem; }
+
+  /* Intro cards */
+  .intro-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:2rem; }
+  .intro-card { border:1px solid var(--border); border-radius:8px; padding:1rem 1.25rem; }
+  .intro-card h3 { font-size:0.82rem; font-weight:700; margin-bottom:0.4rem; }
+  .intro-card p { font-size:0.8rem; color:#374151; margin:0; }
+
+  /* Template summary cards */
+  .tcard { border:1px solid var(--border); border-radius:8px; margin-bottom:1rem; overflow:hidden; }
+  .tcard-header { display:grid; grid-template-columns:140px 1fr; align-items:center; gap:0; }
+  .tcard-label { padding:1rem 1.25rem; font-weight:700; font-size:0.9rem; border-right:1px solid var(--border); }
+  .tcard-summary { padding:0.85rem 1.25rem; font-size:0.82rem; }
+  .tcard-summary .when { font-weight:700; margin-bottom:0.2rem; }
+  .tcard-summary .desc { color:#374151; }
+  .tcard-body { border-top:1px solid var(--border); display:grid; grid-template-columns:repeat(4,1fr); }
+  .tcard-stat { padding:0.6rem 1rem; border-right:1px solid var(--border); font-size:0.78rem; }
+  .tcard-stat:last-child { border-right:none; }
+  .tcard-stat .label { font-size:0.66rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--gray); margin-bottom:0.2rem; }
+  .tcard-stat .val { font-weight:700; }
+
+  .badge { display:inline-block; padding:0.15rem 0.55rem; border-radius:20px; font-size:0.7rem; font-weight:700; }
+  .light      { background:#e0f2fe; color:#0369a1; }
+  .standard   { background:#eff6ff; color:#2563eb; }
+  .full       { background:#ede9fe; color:#7c3aed; }
+  .enterprise { background:#fee2e2; color:#dc2626; }
+  .demo       { background:#dcfce7; color:#16a34a; }
+
+  /* Decision guide */
+  .decision-table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-bottom:2rem; }
+  .decision-table th { background:var(--navy); color:white; padding:0.6rem 0.85rem; text-align:left; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.05em; }
+  .decision-table td { padding:0.6rem 0.85rem; border-bottom:1px solid var(--border); vertical-align:top; }
+  .decision-table tr:last-child td { border-bottom:none; }
+  .decision-table tr:nth-child(even) td { background:var(--gray-light); }
+
+  /* Milestones */
+  .milestone-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:2rem; }
+  .ms-card { border-left:4px solid #f59e0b; background:#fffbeb; border-radius:0 8px 8px 0; padding:0.85rem 1rem; }
+  .ms-card .ms-num { font-size:0.68rem; font-weight:700; text-transform:uppercase; color:#92400e; letter-spacing:0.06em; margin-bottom:0.25rem; }
+  .ms-card .ms-name { font-weight:700; font-size:0.9rem; margin-bottom:0.2rem; }
+  .ms-card .ms-when { font-size:0.78rem; color:#78350f; }
+
+  /* Task types */
+  .type-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:2rem; }
+  .type-card { border-radius:8px; padding:0.75rem 1rem; }
+  .type-card .type-name { font-weight:700; font-size:0.82rem; margin-bottom:0.2rem; }
+  .type-card .type-desc { font-size:0.77rem; }
+
+  /* How to select */
+  .steps { counter-reset:step; margin-bottom:2rem; }
+  .step { display:flex; gap:1rem; margin-bottom:0.75rem; align-items:flex-start; }
+  .step-num { background:var(--navy); color:white; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; flex-shrink:0; margin-top:0.05rem; }
+  .step-text { font-size:0.84rem; line-height:1.5; }
+  .step-text strong { display:block; font-weight:700; }
+
+  footer { margin-top:2rem; padding-top:1rem; border-top:1px solid var(--border); font-size:0.75rem; color:var(--gray); }
+  @media print { body { padding:1.5rem; } }
+</style>
+</head>
+<body>
+
+<h1>Experience Task Templates</h1>
+<div class="subtitle">Good Growth &middot; V2 Delivery &middot; June 2026</div>
+
+<h2>What are task templates?</h2>
+<div class="intro-grid">
+  <div class="intro-card">
+    <h3>What they do</h3>
+    <p>When a Delivery Manager selects a template on an Experience task, a standard set of subtasks is automatically created — covering every stage from proposal through to results. This ensures consistent delivery structure across all client work.</p>
+  </div>
+  <div class="intro-card">
+    <h3>Why we have different ones</h3>
+    <p>Not all experiences are the same. A quick demo has different needs to a complex enterprise programme. Templates are sized to the work — so the structure is always appropriate, never excessive or insufficient.</p>
+  </div>
+</div>
+
+<h2>The five templates</h2>
+
+<div class="tcard">
+  <div class="tcard-header">
+    <div class="tcard-label"><span class="badge light">Lightweight</span></div>
+    <div class="tcard-summary">
+      <div class="when">Fast-turnaround or low-complexity experiences</div>
+      <div class="desc">Minimal gates. Straight from brief to build to results with a single QA pass. Use when the experience is well-understood and doesn't require proposal or feasibility stages.</div>
+    </div>
+  </div>
+  <div class="tcard-body">
+    <div class="tcard-stat"><div class="label">Subtasks</div><div class="val">10</div></div>
+    <div class="tcard-stat"><div class="label">Proposal stage</div><div class="val">Brief only</div></div>
+    <div class="tcard-stat"><div class="label">QA tracks</div><div class="val">1 internal</div></div>
+    <div class="tcard-stat"><div class="label">Post-live</div><div class="val">Results</div></div>
+  </div>
+</div>
+
+<div class="tcard">
+  <div class="tcard-header">
+    <div class="tcard-label"><span class="badge standard">Standard</span></div>
+    <div class="tcard-summary">
+      <div class="when">Default for most experiences</div>
+      <div class="desc">Full ideation, feasibility and proposal stages before build. Includes functionality and analytics QA tracks, client QA with amends, and change request handling. The right choice when in doubt.</div>
+    </div>
+  </div>
+  <div class="tcard-body">
+    <div class="tcard-stat"><div class="label">Subtasks</div><div class="val">20</div></div>
+    <div class="tcard-stat"><div class="label">Proposal stage</div><div class="val">Ideation → Feasibility → Estimate → Proposal</div></div>
+    <div class="tcard-stat"><div class="label">QA tracks</div><div class="val">Functionality + Analytics</div></div>
+    <div class="tcard-stat"><div class="label">Post-live</div><div class="val">Run → Conclude → Results Review</div></div>
+  </div>
+</div>
+
+<div class="tcard">
+  <div class="tcard-header">
+    <div class="tcard-label"><span class="badge full">Full</span></div>
+    <div class="tcard-summary">
+      <div class="when">High-scrutiny programmes with strong governance needs</div>
+      <div class="desc">Comprehensive proposal stage with analytics spec and internal review. Multi-track internal QA with sign-off gate. Client QA stage includes post-QA client sign-off and go-live date agreement.</div>
+    </div>
+  </div>
+  <div class="tcard-body">
+    <div class="tcard-stat"><div class="label">Subtasks</div><div class="val">23</div></div>
+    <div class="tcard-stat"><div class="label">Proposal stage</div><div class="val">5-step proposal incl. analytics spec</div></div>
+    <div class="tcard-stat"><div class="label">QA tracks</div><div class="val">Dev + Delivery + Insights</div></div>
+    <div class="tcard-stat"><div class="label">Post-live</div><div class="val">Monitor + Results</div></div>
+  </div>
+</div>
+
+<div class="tcard">
+  <div class="tcard-header">
+    <div class="tcard-label"><span class="badge enterprise">Enterprise</span></div>
+    <div class="tcard-summary">
+      <div class="when">Large enterprise clients with technical complexity</div>
+      <div class="desc">Heaviest template. Adds Technical Design Doc to the build plan stage, and specialist ECOM and SRE tracks within client QA. Includes experience performance and stability monitoring post-launch, plus a test results deck.</div>
+    </div>
+  </div>
+  <div class="tcard-body">
+    <div class="tcard-stat"><div class="label">Subtasks</div><div class="val">25</div></div>
+    <div class="tcard-stat"><div class="label">Proposal stage</div><div class="val">5-step proposal incl. analytics spec</div></div>
+    <div class="tcard-stat"><div class="label">QA tracks</div><div class="val">Dev + Delivery + Insights + ECOM + SRE</div></div>
+    <div class="tcard-stat"><div class="label">Post-live</div><div class="val">Monitor (perf + stability) + Results Deck</div></div>
+  </div>
+</div>
+
+<div class="tcard">
+  <div class="tcard-header">
+    <div class="tcard-label"><span class="badge demo">Demo</span></div>
+    <div class="tcard-summary">
+      <div class="when">Pre-sales and prospect demonstrations</div>
+      <div class="desc">Scoped for demos only — no formal results tracking. Includes demo video production steps (creation, review, upload) and ends at the demo meeting. Client QA is a stakeholder/prospect review rather than a formal gate.</div>
+    </div>
+  </div>
+  <div class="tcard-body">
+    <div class="tcard-stat"><div class="label">Subtasks</div><div class="val">13</div></div>
+    <div class="tcard-stat"><div class="label">Proposal stage</div><div class="val">Scope only</div></div>
+    <div class="tcard-stat"><div class="label">QA tracks</div><div class="val">Delivery QA only</div></div>
+    <div class="tcard-stat"><div class="label">Post-live</div><div class="val">Demo Meeting (no results)</div></div>
+  </div>
+</div>
+
+<h2>Choosing the right template</h2>
+<table class="decision-table">
+  <thead>
+    <tr><th>If the experience is…</th><th>Use this template</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>A fast follow-on, well-scoped, minimal stakeholder involvement</td><td><span class="badge light">Lightweight</span></td></tr>
+    <tr><td>A typical client experience — standard scope, standard scrutiny</td><td><span class="badge standard">Standard</span></td></tr>
+    <tr><td>High-value, high-visibility, or requires formal proposal approval and multi-track QA</td><td><span class="badge full">Full</span></td></tr>
+    <tr><td>An enterprise client with technical stakeholders (ECOM, SRE) and monitoring requirements</td><td><span class="badge enterprise">Enterprise</span></td></tr>
+    <tr><td>A pre-sales or prospect demo — no live test, includes video production</td><td><span class="badge demo">Demo</span></td></tr>
+    <tr><td>Unsure?</td><td>Default to <span class="badge standard">Standard</span> and adjust if needed</td></tr>
+  </tbody>
+</table>
+
+<h2>The three mandatory milestones — present in every template</h2>
+<div class="milestone-row">
+  <div class="ms-card">
+    <div class="ms-num">Milestone 1</div>
+    <div class="ms-name">&#127937; Client Sign-Off</div>
+    <div class="ms-when">After the proposal / brief stage. Nothing moves to Design or Build until this is complete.</div>
+  </div>
+  <div class="ms-card">
+    <div class="ms-num">Milestone 2</div>
+    <div class="ms-name">&#127937; Client QA</div>
+    <div class="ms-when">After internal QA is signed off. Opens the client review stage. Nothing goes to client until this gate is reached.</div>
+  </div>
+  <div class="ms-card">
+    <div class="ms-num">Milestone 3</div>
+    <div class="ms-name">&#127937; Ready for Live</div>
+    <div class="ms-when">After all QA and approvals are complete. Nothing launches until this milestone is marked complete.</div>
+  </div>
+</div>
+
+<h2>Task types used across all templates</h2>
+<div class="type-grid">
+  <div class="type-card" style="background:#ccfbf1">
+    <div class="type-name" style="color:#0d9488">Discovery</div>
+    <div class="type-desc" style="color:#134e4a">Research, ideation, and scoping work. Understanding the problem before committing to a solution.</div>
+  </div>
+  <div class="type-card" style="background:#ede9fe">
+    <div class="type-name" style="color:#7c3aed">Design</div>
+    <div class="type-desc" style="color:#4c1d95">Speccing and designing the experience — brief, acceptance criteria, visual design, and build planning.</div>
+  </div>
+  <div class="type-card" style="background:#eff6ff">
+    <div class="type-name" style="color:#2563eb">Build</div>
+    <div class="type-desc" style="color:#1e3a8a">Development and implementation work, including fixing issues identified in QA.</div>
+  </div>
+  <div class="type-card" style="background:#ffedd5">
+    <div class="type-name" style="color:#ea580c">Decide</div>
+    <div class="type-desc" style="color:#7c2d12">QA, review, analysis, and results — assessing quality and measuring outcomes.</div>
+  </div>
+
+  <div class="type-card" style="background:#fef3c7">
+    <div class="type-name" style="color:#d97706">Milestone</div>
+    <div class="type-desc" style="color:#78350f">Formal gate points. Must be marked complete before the next stage can begin.</div>
+  </div>
+</div>
+
+<h2>How to select a template</h2>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Fill in the Experience details</strong>Experience Code, Client, T-Shirt Size, Credit Size.</div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Select a template from the Subtask Template dropdown</strong>This triggers automatic subtask creation. The structure is created immediately — you don't need to tick Details Complete first.</div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Review the subtasks and assign owners</strong>Subtasks are created unassigned. Assign the relevant team members before the experience moves into active delivery.</div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Tick Experience Details Complete</strong>This triggers field stamping — Experience Code, Client, sizing fields, and time estimates are pushed down to the relevant subtasks automatically.</div></div>
+</div>
+
+<footer>Good Growth &middot; Experience Task Templates Overview &middot; V2 Delivery &middot; June 2026</footer>
+
+</body>
+</html>

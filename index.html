@@ -1,1 +1,480 @@
-hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClickUp Training — Good Growth</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --denim:     #006D97;
+      --denim-dk:  #00506f;
+      --sky:       #55F1FF;
+      --purple:    #41006E;
+      --red:       #FF0069;
+      --green:     #44F3C5;
+      --peach:     #FBBE8A;
+      --grey:      #A0B6BD;
+      --bg:        #ffffff;
+      --bg-soft:   #f4f8fa;
+      --bg-card:   #ffffff;
+      --text:      #0d1b22;
+      --text-dim:  #4a6572;
+      --border:    #dce8ed;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 2.5rem;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .logo span { color: var(--denim); }
+
+    nav { display: flex; gap: 2rem; }
+    nav a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--denim); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      background: var(--denim);
+      padding: 9rem 2.5rem 6rem;
+      overflow: hidden;
+    }
+
+    /* Duality shapes */
+    .duality-a {
+      position: absolute; top: 0; right: 0; bottom: 0;
+      width: 50%;
+      background: linear-gradient(135deg, rgba(0,80,111,0.0) 0%, rgba(0,40,60,0.35) 100%);
+      clip-path: polygon(18% 0%, 100% 0%, 100% 100%, 0% 100%);
+    }
+    .duality-b {
+      position: absolute; top: 0; right: 0; bottom: 0;
+      width: 32%;
+      background: rgba(85,241,255,0.07);
+      clip-path: polygon(22% 0%, 100% 0%, 100% 100%, 4% 100%);
+      border-left: 1px solid rgba(85,241,255,0.2);
+    }
+
+    .hero-inner { position: relative; z-index: 1; max-width: 680px; }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--sky);
+      margin-bottom: 1.5rem;
+      padding: 0.3rem 0.75rem;
+      border: 1px solid rgba(85,241,255,0.4);
+      border-radius: 2px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.6rem, 5.5vw, 4.75rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: #fff;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 .line-light {
+      color: rgba(255,255,255,0.45);
+      font-weight: 300;
+    }
+    .hero h1 .line-sky { color: var(--sky); }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.7);
+      max-width: 500px;
+      margin-bottom: 2.25rem;
+      line-height: 1.7;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: #fff;
+      color: var(--denim);
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: 0.04em;
+      padding: 0.85rem 1.75rem;
+      border-radius: 3px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .hero-cta:hover { background: var(--sky); transform: translateY(-2px); }
+
+    /* ── SECTION ── */
+    section { padding: 5rem 2.5rem; }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--denim);
+      margin-bottom: 0.6rem;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.65rem;
+      color: var(--text);
+    }
+    .section-sub {
+      font-size: 1rem;
+      color: var(--text-dim);
+      max-width: 520px;
+      margin-bottom: 2.75rem;
+      line-height: 1.7;
+    }
+    .divider {
+      width: 36px; height: 3px;
+      background: var(--denim);
+      margin-bottom: 2.75rem;
+      border-radius: 2px;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* ── STEPS ── */
+    .how-section { background: var(--bg-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .steps { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .step { flex: 1; min-width: 200px; display: flex; gap: 1.1rem; align-items: flex-start; }
+    .step-num {
+      flex-shrink: 0;
+      width: 2.1rem; height: 2.1rem;
+      background: var(--denim);
+      border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 800;
+      color: var(--sky);
+    }
+    .step-text h3 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .step-text p  { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+
+    /* ── MODULE CARDS ── */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.1rem;
+    }
+    .module-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--denim);
+      border-radius: 4px;
+      padding: 1.6rem;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: border-left-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .module-card:hover {
+      border-left-color: var(--red);
+      box-shadow: 0 6px 24px rgba(0,109,151,0.1);
+      transform: translateY(-2px);
+    }
+    .module-card:hover .module-arrow { color: var(--denim); transform: translateX(4px); }
+
+    .module-num {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 0.85rem;
+    }
+    .module-icon { font-size: 1.5rem; margin-bottom: 0.65rem; display: block; }
+    .module-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.45rem; }
+    .module-desc { font-size: 0.86rem; color: var(--text-dim); line-height: 1.65; margin-bottom: 1.1rem; }
+    .module-footer { display: flex; align-items: center; justify-content: space-between; }
+    .module-tag {
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 0.22rem 0.55rem; border-radius: 2px;
+    }
+    .tag-start { background: #e6f8f5; color: #00856a; }
+    .tag-core  { background: #e5f3f9; color: var(--denim); }
+    .tag-adv   { background: #fdf3e8; color: #b06000; }
+    .module-arrow { font-size: 0.95rem; color: var(--grey); transition: color 0.2s, transform 0.2s; }
+
+    /* ── HELP ── */
+    .help-section { background: var(--bg-soft); border-top: 1px solid var(--border); }
+    .help-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+    .help-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.4rem;
+    }
+    .help-icon { font-size: 1.35rem; margin-bottom: 0.65rem; display: block; }
+    .help-card h3 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .help-card p  { font-size: 0.84rem; color: var(--text-dim); line-height: 1.6; }
+    .help-card a  { color: var(--denim); font-weight: 600; text-decoration: none; }
+    .help-card a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2rem 2.5rem;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      background: #fff;
+    }
+    footer p { font-size: 0.78rem; color: var(--text-dim); }
+    .footer-logo { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+    .footer-logo span { color: var(--denim); }
+
+    @media (max-width: 640px) {
+      header { padding: 1rem 1.25rem; }
+      nav { gap: 1.25rem; }
+      .hero, section { padding-left: 1.25rem; padding-right: 1.25rem; }
+      footer { padding: 1.5rem 1.25rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Good <span>Growth</span></div>
+  <nav>
+    <a href="#modules">Modules</a>
+    <a href="#how">Getting started</a>
+    <a href="#help">Help</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="duality-a"></div>
+  <div class="duality-b"></div>
+  <div class="hero-inner">
+    <span class="hero-eyebrow">ClickUp Training</span>
+    <h1>
+      <span class="line-light">Old habits.</span><br>
+      <span class="line-sky">Better system.</span>
+    </h1>
+    <p class="hero-sub">Everything you need to work in ClickUp the Good Growth way — clear, consistent, and actually useful.</p>
+    <a href="#modules" class="hero-cta">
+      Start training
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- HOW TO START -->
+<section class="how-section" id="how">
+  <div class="container">
+    <p class="section-label">Getting started</p>
+    <h2 class="section-title">Three steps to ready</h2>
+    <div class="divider"></div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <h3>Log in</h3>
+          <p>Access ClickUp at app.clickup.com with your Good Growth email. Accept the workspace invite if you haven't already.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <h3>Take the tour</h3>
+          <p>Work through the modules below in order. Start with Workspace Overview — it gives everything else context.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <h3>Start working</h3>
+          <p>Open your personal to-do list and try creating your first task. There's no staging environment — just do it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section id="modules">
+  <div class="container">
+    <p class="section-label">Training modules</p>
+    <h2 class="section-title">Learn what matters</h2>
+    <p class="section-sub">Six short modules covering how we use ClickUp at Good Growth.</p>
+    <div class="divider"></div>
+    <div class="modules-grid">
+
+      <a href="#" class="module-card">
+        <div class="module-num">Module 01</div>
+        <span class="module-icon">🗂</span>
+        <div class="module-title">Workspace Overview</div>
+        <p class="module-desc">How Good Growth's ClickUp is structured — Spaces, Folders, Lists, and where everything lives. Start here.</p>
+        <div class="module-footer">
+          <span class="module-tag tag-start">Start here</span>
+          <span class="module-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="module-card">
+        <div class="module-num">Module 02</div>
+        <span class="module-icon">✅</span>
+        <div class="module-title">Task Types</div>
+        <p class="module-desc">The four task types — Experience, Mainstream, Insight/QBR/Demo, and Component/DEM — and when to use each one.</p>
+        <div class="module-footer">
+          <span class="module-tag tag-core">Core</span>
+          <span class="module-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="module-card">
+        <div class="module-num">Module 03</div>
+        <span class="module-icon">📋</span>
+        <div class="module-title">Creating & Managing Tasks</div>
+        <p class="module-desc">Day-to-day workflow: creating tasks, setting priority, assigning owners, updating statuses, and writing descriptions that actually help.</p>
+        <div class="module-footer">
+          <span class="module-tag tag-core">Core</span>
+          <span class="module-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="module-card">
+        <div class="module-num">Module 04</div>
+        <span class="module-icon">📊</span>
+        <div class="module-title">Views & Dashboards</div>
+        <p class="module-desc">Finding what you need fast — List view, Board view, Me mode, and how to filter without breaking someone else's setup.</p>
+        <div class="module-footer">
+          <span class="module-tag tag-core">Core</span>
+          <span class="module-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="module-card">
+        <div class="module-num">Module 05</div>
+        <span class="module-icon">🤝</span>
+        <div class="module-title">Client Boards</div>
+        <p class="module-desc">How client delivery work is organised in ClickUp — the Client Delivery space, client folders, and the conventions we follow.</p>
+        <div class="module-footer">
+          <span class="module-tag tag-core">Core</span>
+          <span class="module-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="module-card">
+        <div class="module-num">Module 06</div>
+        <span class="module-icon">🔔</span>
+        <div class="module-title">Notifications & Inbox</div>
+        <p class="module-desc">Taming the noise — how to configure your inbox, use @mentions correctly, and not miss the things that matter.</p>
+        <div class="module-footer">
+          <span class="module-tag tag-adv">Useful</span>
+          <span class="module-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="module-card">
+        <div class="module-num">Module 07</div>
+        <span class="module-icon">🎛</span>
+        <div class="module-title">Personalisation & Planner</div>
+        <p class="module-desc">Tailoring ClickUp to how you work — custom views, saved filters, the Home planner, and settings worth knowing about.</p>
+        <div class="module-footer">
+          <span class="module-tag tag-adv">Useful</span>
+          <span class="module-arrow">→</span>
+        </div>
+      </a>
+
+      <a href="#" class="module-card">
+        <div class="module-num">Module 08</div>
+        <span class="module-icon">🗓</span>
+        <div class="module-title">Capacity, Leave & Annual Leave</div>
+        <p class="module-desc">How to log annual leave and other absence in ClickUp, how capacity is tracked across the team, and what that means for sprint planning.</p>
+        <div class="module-footer">
+          <span class="module-tag tag-adv">Useful</span>
+          <span class="module-arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- HELP -->
+<section class="help-section" id="help">
+  <div class="container">
+    <p class="section-label">Support</p>
+    <h2 class="section-title">When you get stuck</h2>
+    <p class="section-sub">There are no stupid questions — just ask before guessing.</p>
+    <div class="divider"></div>
+    <div class="help-grid">
+      <div class="help-card">
+        <span class="help-icon">💬</span>
+        <h3>Ask Jess</h3>
+        <p>Internal Projects Manager and ClickUp lead. Drop her a message if something doesn't make sense or looks wrong.</p>
+      </div>
+      <div class="help-card">
+        <span class="help-icon">📚</span>
+        <h3>ClickUp Docs</h3>
+        <p>Process documentation and workspace guides live in ClickUp Docs. Check there before asking.</p>
+      </div>
+      <div class="help-card">
+        <span class="help-icon">🔗</span>
+        <h3>ClickUp Help Centre</h3>
+        <p>For general questions, <a href="https://help.clickup.com" target="_blank" rel="noopener">help.clickup.com</a> is comprehensive and well maintained.</p>
+      </div>
+      <div class="help-card">
+        <span class="help-icon">🐛</span>
+        <h3>Found a problem?</h3>
+        <p>If something looks broken or a task is in the wrong place, flag it rather than fixing it yourself — structure changes affect everyone.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Good <span>Growth</span></div>
+  <p>Internal use only · Good Growth Ltd</p>
+</footer>
+
+</body>
+</html>

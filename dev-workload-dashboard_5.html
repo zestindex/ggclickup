@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dev Workload — Right Now</title>
+<style>
+  :root{
+    --ink:#0B1720;
+    --ink-secondary:#3E5560;
+    --ink-muted:#7C8F97;
+    --surface:#FFFFFF;
+    --surface-sunken:#F4F8FA;
+    --border:#E1EAEE;
+    --denim-1:#DCEFF4;
+    --denim-2:#A9D6E3;
+    --denim-3:#6FB8CE;
+    --denim-4:#2E93B3;
+    --denim-5:#00516F;
+    --red:#D3004A;
+    --red-bg:#FFE3ED;
+    --amber:#8A5B00;
+    --amber-bg:#FCF0D8;
+    --green:#0A7A5E;
+    --green-bg:#DFF6EF;
+    --font: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:var(--font);
+    background:var(--surface-sunken);
+    color:var(--ink);
+    padding:32px 40px 64px;
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-bottom:24px;
+  }
+  h1{ font-size:26px; font-weight:800; margin:0 0 4px; letter-spacing:-0.01em; }
+  .subtitle{ color:var(--ink-secondary); font-size:14px; margin:0; }
+  .meta{ text-align:right; font-size:12px; color:var(--ink-muted); line-height:1.6; }
+  .meta button{
+    font-family:inherit; font-size:12px; font-weight:700;
+    background:var(--denim-5); color:#fff; border:none;
+    padding:6px 12px; border-radius:6px; cursor:pointer; margin-top:6px;
+  }
+  .meta button:hover{ background:#003A50; }
+
+  .stat-row{ display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; margin-bottom:24px; }
+  .stat-tile{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px 18px; }
+  .stat-tile .value{ font-size:26px; font-weight:800; color:var(--denim-5); line-height:1.1; }
+  .stat-tile .value.flag{ color:var(--red); }
+  .stat-tile .label{ font-size:12px; color:var(--ink-secondary); margin-top:4px; }
+
+  .panel{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:20px 22px; margin-bottom:22px; }
+  .panel h2{ font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-secondary); margin:0 0 4px; }
+  .panel .panel-sub{ font-size:12px; color:var(--ink-muted); margin:0 0 16px; }
+
+  .stage-bars{ display:flex; flex-direction:column; gap:10px; }
+  .stage-row{
+    display:grid; grid-template-columns:120px 1fr 34px; align-items:center; gap:10px; font-size:13px;
+    cursor:pointer; padding:4px 6px; margin:-4px -6px; border-radius:6px; transition:background .12s;
+  }
+  .stage-row:hover{ background:var(--surface-sunken); }
+  .stage-row.active{ background:var(--denim-1); }
+  .stage-row .stage-name{ color:var(--ink); font-weight:600; }
+  .stage-track{ background:var(--surface-sunken); border-radius:5px; height:14px; overflow:hidden; }
+  .stage-fill{ height:100%; border-radius:5px; }
+  .stage-row .count{ text-align:right; color:var(--ink-secondary); font-variant-numeric:tabular-nums; }
+  .legend{ display:flex; gap:16px; flex-wrap:wrap; margin-top:14px; font-size:12px; color:var(--ink-muted); }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; cursor:pointer; padding:2px 6px; border-radius:20px; transition:background .12s; }
+  .legend span:hover{ background:var(--surface-sunken); }
+  .legend span.active{ background:var(--denim-1); color:var(--denim-5); font-weight:700; }
+  .legend i{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+  .filter-banner{
+    display:flex; align-items:center; gap:10px; background:var(--denim-1); color:var(--denim-5);
+    font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:8px; margin-bottom:14px;
+  }
+  .filter-banner button{
+    font-family:inherit; font-size:12px; font-weight:700; color:var(--denim-5); background:#fff;
+    border:1px solid var(--denim-5); border-radius:20px; padding:2px 10px; cursor:pointer;
+  }
+  .filter-banner button:hover{ background:var(--denim-5); color:#fff; }
+
+  /* Developer groups */
+  .dev-group{ border:1px solid var(--border); border-radius:10px; margin-bottom:14px; overflow:hidden; background:var(--surface); }
+  .dev-group-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 18px; background:var(--surface-sunken); border-bottom:1px solid var(--border);
+  }
+  .dev-name{ font-size:15px; font-weight:800; color:var(--ink); }
+  .dev-count{ font-size:12px; color:var(--ink-secondary); font-weight:600; }
+  .ticket-row{
+    display:grid;
+    grid-template-columns: 2.2fr 1.3fr 0.9fr 1fr 1.1fr;
+    gap:14px; align-items:center;
+    padding:11px 18px; border-bottom:1px solid var(--border); font-size:13px;
+  }
+  .ticket-row:last-child{ border-bottom:none; }
+  .ticket-row .col-label{ display:none; }
+  .task-title{ font-weight:600; color:var(--ink); text-decoration:none; }
+  .task-title:hover{ text-decoration:underline; }
+  .parent-link{ font-size:11px; color:var(--ink-muted); text-decoration:none; display:inline-block; margin-top:2px; }
+  .parent-link:hover{ text-decoration:underline; color:var(--denim-5); }
+  .parent-link::before{ content:"↳ parent: "; }
+  .client-tag{
+    display:inline-block; margin-top:3px; font-size:11px; font-weight:700;
+    color:var(--denim-5); background:var(--denim-1); border-radius:6px; padding:2px 7px;
+  }
+  .pill{ font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; color:#fff; white-space:nowrap; display:inline-block; }
+  .tshirt-badge{
+    font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; white-space:nowrap; display:inline-block;
+    background:var(--surface-sunken); color:var(--ink-secondary); border:1px solid var(--border);
+  }
+  .inherited-note{ font-size:10.5px; color:var(--ink-muted); margin-top:2px; font-style:italic; }
+  .time-cell{ white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .stuck-badge{
+    display:inline-block; margin-top:4px; font-size:10px; font-weight:800;
+    color:var(--red); background:var(--red-bg); border-radius:20px; padding:1px 7px;
+  }
+  .due-cell{ white-space:nowrap; }
+  .due-overdue{ color:var(--red); font-weight:700; }
+  .due-today{ color:var(--red); font-weight:700; }
+  .due-soon{ color:var(--amber); font-weight:700; }
+  .due-ok{ color:var(--ink-muted); }
+  .flag-note{ display:block; font-size:10.5px; font-weight:600; margin-top:2px; }
+
+  .other-work-group{
+    border:1px solid var(--border); border-radius:10px; margin-bottom:10px; padding:14px 18px;
+    background:var(--surface);
+  }
+  .other-work-group .dev-name{ font-size:14px; }
+  .other-work-text{ font-size:12.5px; color:var(--ink-secondary); line-height:1.5; margin:4px 0 10px; }
+  .other-work-group summary{
+    cursor:pointer; font-size:12.5px; font-weight:700; color:var(--denim-5);
+    list-style:none; display:flex; align-items:center; gap:7px; padding:6px 10px;
+    background:var(--surface-sunken); border-radius:7px; user-select:none;
+  }
+  .other-work-group summary:hover{ background:var(--denim-1); }
+  .other-work-group summary::-webkit-details-marker{ display:none; }
+  .other-work-group summary::marker{ content:""; }
+  .other-work-group summary::before{
+    content:"▸"; font-size:10px; display:inline-block; transition:transform .12s; flex:none;
+  }
+  .other-work-group details[open] summary::before{ transform:rotate(90deg); }
+  .other-work-group details[open] summary{ border-radius:7px 7px 0 0; margin-bottom:0; }
+
+  .other-work-list-inner{
+    border:1px solid var(--border); border-top:none; border-radius:0 0 8px 8px;
+    padding:4px 14px; background:var(--surface);
+  }
+  .other-work-header{
+    display:grid; grid-template-columns: 2.2fr 1.3fr 0.9fr 1fr 1.1fr;
+    gap:14px; padding:8px 4px 6px; font-size:10.5px; text-transform:uppercase; letter-spacing:.03em;
+    color:var(--ink-muted); font-weight:700; border-bottom:1px solid var(--border);
+  }
+  .other-work-ticket{
+    display:grid; grid-template-columns: 2.2fr 1.3fr 0.9fr 1fr 1.1fr;
+    gap:14px; align-items:center;
+    padding:9px 4px; border-bottom:1px solid var(--border); font-size:12.5px;
+  }
+  .other-work-ticket:last-child{ border-bottom:none; }
+  .other-work-ticket:hover{ background:var(--surface-sunken); }
+  .other-work-list{ margin-top:10px; }
+  .status-pill{
+    font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; white-space:nowrap; display:inline-block;
+    background:var(--surface-sunken); color:var(--ink-secondary); border:1px solid var(--border);
+  }
+  .status-pill.protected{ background:var(--amber-bg); color:var(--amber); border-color:transparent; }
+  .stale-note{ font-size:11.5px; color:var(--ink-muted); font-style:italic; margin-top:8px; }
+  @media (max-width:900px){
+    .other-work-header{ display:none; }
+    .other-work-ticket{ grid-template-columns:1fr; gap:4px; }
+    .other-work-ticket .col-label{ display:inline; font-size:10px; text-transform:uppercase; color:var(--ink-muted); font-weight:700; margin-right:6px; }
+  }
+
+  footer{ margin-top:8px; font-size:12px; color:var(--ink-muted); line-height:1.7; max-width:960px; }
+  footer strong{ color:var(--ink-secondary); }
+
+  @media (max-width:900px){
+    .ticket-row{ grid-template-columns:1fr; gap:4px; }
+    .ticket-row .col-label{ display:inline; font-size:10px; text-transform:uppercase; color:var(--ink-muted); font-weight:700; margin-right:6px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Dev Workload — Right Now</h1>
+    <p class="subtitle">Good Growth · Build squad · DELIVERY space</p>
+  </div>
+  <div class="meta">
+    Snapshot generated from live ClickUp data<br>
+    <span id="asOf">As of 20 Aug 2026, 09:00 BST</span><br>
+    <button onclick="alert('This snapshot is regenerated by Claude — ask in chat to refresh, or wait for the next scheduled run.')">↻ Refresh</button>
+  </div>
+</header>
+
+<div class="stat-row">
+  <div class="stat-tile"><div class="value">12<span style="font-weight:500;color:var(--ink-muted);font-size:16px;"> / 19</span></div><div class="label">Build squad with active pipeline work</div></div>
+  <div class="stat-tile"><div class="value">22</div><div class="label">tickets in flight</div></div>
+  <div class="stat-tile"><div class="value flag">8</div><div class="label">stuck &gt;14 days in status</div></div>
+  <div class="stat-tile"><div class="value flag">11</div><div class="label">overdue</div></div>
+  <div class="stat-tile"><div class="value">7</div><div class="label">working earlier/later in the pipeline</div></div>
+</div>
+
+<div class="panel">
+  <h2>Pipeline stage breakdown</h2>
+  <p class="panel-sub">Where the 22 active tickets sit right now — same status order as the ClickUp board. Click a stage to filter the tickets below.</p>
+  <div class="stage-bars" id="stageBars"></div>
+  <div class="legend" id="stageLegend"></div>
+</div>
+
+<div class="panel">
+  <h2>Active tickets, grouped by developer</h2>
+  <p class="panel-sub" id="devGroupsSub">Every ticket currently in Brief / Build / Peer Review / Internal QA / Client QA / QA Fixes / Ready for Live / Live. Ticket titles link straight through to ClickUp; where a ticket sits under a parent Experience, that parent is linked underneath in smaller type. Client tag, T-shirt size (time estimate) and due date shown for each — italic notes flag where a value was inherited from the parent.</p>
+  <div id="devGroups"></div>
+</div>
+
+<div class="panel">
+  <h2>Everyone else — what they're actually working on</h2>
+  <p class="panel-sub">No ticket in the 8 tracked statuses right now, but not idle — click into each name to see every ticket assigned to them and how long they've been sitting in their current status</p>
+  <div id="otherWorkGrid"></div>
+</div>
+
+<footer>
+  <strong>Roster:</strong> the 19 people in the Build space's Team tab in ClickUp — kept in sync via the "Build Squad Roster" list (Operations → People). Add or remove someone there and it flows through automatically.<br>
+  <strong>Scope:</strong> DELIVERY space, tickets in Brief / Build / Peer Review / Internal QA / Client QA / QA Fixes / Ready for Live / Live count as active pipeline work. Everyone else on the roster has real work too — see the section above — it's just sitting in an earlier stage (Pending/Design/Proposal), a later one (Results/Complete), on hold, or on internal Build-space platform tooling, which isn't tracked here because that space's statuses can sit unchanged for months and don't reflect day-to-day activity.<br>
+  <strong>Data flag:</strong> ticket 11.1 "Express shipping badging" (THD) shows Kanav Bhagat as assignee when searched, but comes back with no assignee on direct lookup — excluded from his active list pending a manual check in ClickUp.<br>
+  <strong>Refresh:</strong> auto-updates every 2 hours, weekdays 9am–5pm UK time. Ask any time in chat for an on-demand refresh too.
+</footer>
+
+<script>
+const CLICKUP_BASE = "https://app.clickup.com/t/";
+
+// Status order matches the ClickUp board exactly
+const stageOrder = ["Brief","Build","Peer Review","Internal QA","Client QA","QA Fixes","Ready for Live","Live"];
+const stageRamp = {
+  "Brief":"#DCEFF4", "Build":"#BFE1EA", "Peer Review":"#9DD1DE", "Internal QA":"#6FB8CE",
+  "Client QA":"#479FBD", "QA Fixes":"#2E93B3", "Ready for Live":"#17708F", "Live":"#00516F",
+};
+const lightStages = new Set(["Brief","Build","Peer Review","Internal QA"]);
+const stageText = (s)=> lightStages.has(s) ? "#0B1720" : "#fff";
+
+// Each ticket: dev, title, taskId, parent:{id,title} (optional), client, stage, minutes (time in current status),
+// due (ISO date or null), dueInherited (bool), tshirt (label or null), tshirtInherited (bool), flagNote (optional)
+const devOrder = [
+  "Charles Sajan","Maisie O'Brien-Butcher","Ben Chambers","Luke Davies","Kanav Bhagat",
+  "Aaqeeb Husain","Jackie Yu","Alex Roberts","Clinton Adabanya","Luke Milner","Shaughn Williams","Elliott Stevens"
+];
+
+const tickets = [
+  { dev:"Charles Sajan", title:"AC: Scenario 14 - payment error on saved card", taskId:"869e0vnvz", parent:{id:"869ch0utp", title:"(Internal) QA - Functionality"}, client:"THD · Scale the Future 4", stage:"QA Fixes", minutes:63122, due:"2026-07-30", dueInherited:true, tshirt:"X-Large (>8 Days)", tshirtInherited:true },
+  { dev:"Charles Sajan", title:"AC: Scenario 11 & 12 (need help finding test data)", taskId:"869e0vmm1", parent:{id:"869ch0utp", title:"(Internal) QA - Functionality"}, client:"THD · Scale the Future 4", stage:"QA Fixes", minutes:63120, due:"2026-07-30", dueInherited:true, tshirt:"X-Large (>8 Days)", tshirtInherited:true },
+  { dev:"Charles Sajan", title:"S4 - 23.0 - Todays Top Searches", taskId:"869dbfgzx", parent:null, client:"THD · Scale the Future 4", stage:"Internal QA", minutes:1532, due:null, dueInherited:false, tshirt:"Small (1-2 Days)", tshirtInherited:false },
+  { dev:"Charles Sajan", title:"S4 - 27.0 - Promoted Apple/Google Pay", taskId:"869e54cd2", parent:null, client:"THD · Scale the Future 4", stage:"Build", minutes:4409, due:"2026-08-20", dueInherited:false, tshirt:"Medium (2-4 Days)", tshirtInherited:false },
+
+  { dev:"Maisie O'Brien-Butcher", title:"Click Events + homepage Tweak", taskId:"869e6308n", parent:{id:"869e47je5", title:"BN - EXP 8.0 - Clear Cut - Clean Up"}, client:"Blue Nile · Sprint 2", stage:"Build", minutes:44773, due:"2026-07-20", dueInherited:true, tshirt:"X-Small (<1 Day)", tshirtInherited:true },
+  { dev:"Maisie O'Brien-Butcher", title:"MSTR - 2.0 - Feasibility + Estimation", taskId:"869e8t16x", parent:{id:"869e8rfyd", title:"MSTR - 2.0 - Site Nav Update"}, client:"Blue Nile · Backlog", stage:"Brief", minutes:40023, due:"2026-07-23", dueInherited:false, tshirt:"X-Small (<1 Day)", tshirtInherited:true },
+  { dev:"Maisie O'Brien-Butcher", title:"EXP 3.0 - Internal QA", taskId:"869dm7t3y", parent:{id:"869dm7t3j", title:"003 - Experience 3.0 – Trolley Offers & Recommendations"}, client:"Ocado · Backlog", stage:"Internal QA", minutes:3102, due:"2026-08-17", dueInherited:false, tshirt:null, tshirtInherited:false },
+
+  { dev:"Ben Chambers", title:"GG003 - Initial build - ES Holiday cover", taskId:"869e2z3bn", parent:{id:"869e1g2ev", title:"GG003 - Build"}, client:"AO", stage:"Build", minutes:59208, due:"2026-07-14", dueInherited:false, tshirt:"X-Large (>8 Days)", tshirtInherited:true },
+  { dev:"Ben Chambers", title:"QA Fixes", taskId:"869d70f8c", parent:{id:"869d70f7r", title:"GG001 - Internal QA"}, client:"AO", stage:"Internal QA", minutes:80754, due:"2026-06-12", dueInherited:false, tshirt:"X-Large (>8 Days)", tshirtInherited:true, flagNote:"Co-assigned with Elliott Stevens" },
+  { dev:"Ben Chambers", title:"GG001 - Experience Build", taskId:"869d70f7e", parent:{id:"869d70f7d", title:"GG001 - Experience 1 - Bundles"}, client:"AO", stage:"Build", minutes:83048, due:null, dueInherited:false, tshirt:"X-Large (>8 Days)", tshirtInherited:true, flagNote:"Co-assigned with Tom Bury (not Build squad)" },
+
+  { dev:"Elliott Stevens", title:"QA Fixes", taskId:"869d70f8c", parent:{id:"869d70f7r", title:"GG001 - Internal QA"}, client:"AO", stage:"Internal QA", minutes:80754, due:"2026-06-12", dueInherited:false, tshirt:"X-Large (>8 Days)", tshirtInherited:true, flagNote:"Co-assigned with Ben Chambers — same ticket" },
+
+  { dev:"Luke Davies", title:"Internal QA", taskId:"869e7u1ej", parent:{id:"869e7u1bz", title:"T151 - Site Nav 3.1 - Search Improvements V2"}, client:"Dunelm · Backlog", stage:"Build", minutes:11564, due:"2026-08-14", dueInherited:false, tshirt:"Medium (2-4 Days)", tshirtInherited:true },
+  { dev:"Luke Davies", title:"T151 - Site Nav 3.1 - Search Improvements V2", taskId:"869e7u1bz", parent:null, client:"Dunelm · Backlog", stage:"QA Fixes", minutes:4181, due:"2026-08-21", dueInherited:false, tshirt:"Medium (2-4 Days)", tshirtInherited:false },
+  { dev:"Luke Davies", title:"T153 - PDP 38.1 - Carousels V3 Mini PDP", taskId:"869e8kgv5", parent:null, client:"Dunelm · Backlog", stage:"Build", minutes:4513, due:"2026-09-03", dueInherited:false, tshirt:"Large (4-8 Days)", tshirtInherited:false },
+
+  { dev:"Kanav Bhagat", title:"S3 - 12.1 - Simplified Cart", taskId:"869djdt1x", parent:null, client:"THD · Scale the Future 5", stage:"Peer Review", minutes:1528, due:"2026-08-03", dueInherited:false, tshirt:"Small (1-2 Days)", tshirtInherited:false },
+
+  { dev:"Aaqeeb Husain", title:"S4 - 7.1 - Sticky Filters on Scroll", taskId:"869d131ju", parent:null, client:"THD · Scale the Future 4", stage:"Client QA", minutes:1426, due:null, dueInherited:false, tshirt:null, tshirtInherited:false },
+  { dev:"Aaqeeb Husain", title:"S3 - 25.0 - Your saved cart", taskId:"869dd2pt8", parent:null, client:"THD · Scale the Future 4", stage:"Live", minutes:14114, due:"2026-08-11", dueInherited:false, tshirt:null, tshirtInherited:false },
+
+  { dev:"Jackie Yu", title:"MOF4.2 - Pet Landing Page Enhancements (L2 Dog Supply)", taskId:"869d47q3n", parent:null, client:"TSC · FF26 Sprint 4", stage:"Client QA", minutes:8566, due:"2026-08-08", dueInherited:false, tshirt:null, tshirtInherited:false },
+
+  { dev:"Alex Roberts", title:"Maintenance: mainstream experiences", taskId:"869egra3u", parent:null, client:"THD · Scale the Future 4", stage:"Build", minutes:194, due:null, dueInherited:false, tshirt:null, tshirtInherited:false },
+  { dev:"Alex Roberts", title:"Smoke tests for core pages in DebugBear", taskId:"869egkex2", parent:null, client:"THD · Scale the Future 4", stage:"Build", minutes:4529, due:null, dueInherited:false, tshirt:null, tshirtInherited:false },
+
+  { dev:"Clinton Adabanya", title:"BOF5.1 - Autoship Upsell Checkout", taskId:"869e7931a", parent:null, client:"TSC · FF26 Sprint 5", stage:"Internal QA", minutes:1385, due:"2026-08-11", dueInherited:false, tshirt:"Large (4-8 Days)", tshirtInherited:false },
+
+  { dev:"Luke Milner", title:"Client QA Fixes 2", taskId:"869bz5xbg", parent:{id:"869ah067j", title:"[Mainstream] T20 - Cart 2.0 - Kohl's Card"}, client:"Kohl's · Future Faster 2", stage:"Build", minutes:75738, due:"2026-01-30", dueInherited:false, tshirt:"Medium (2-4 Days)", tshirtInherited:true, flagNote:"Due date is 7 months in the past — worth a health check" },
+
+  { dev:"Shaughn Williams", title:"T146 - OOS Carousel with Toast Message", taskId:"869dn94yg", parent:null, client:"Dunelm · Q3 2026", stage:"QA Fixes", minutes:16, due:"2026-08-24", dueInherited:false, tshirt:"Large (4-8 Days)", tshirtInherited:false },
+];
+
+const otherWork = [
+  { dev:"Jake Stanier", text:"28 tickets on file — mostly aging Q1/Q4 2025 \"pending\" build/QA-fix placeholders that never got closed out, plus real post-build work in Results stages.",
+    stale:"Rows below with status Pending and no recent movement are largely dormant sprint debris — worth a cleanup pass with Jake rather than treating as active load.",
+    tickets:[
+      { taskId:"869bvmqeh", title:"Mainstream Identification - Dunelm", client:"Projects", status:"to scope", minutes:304029, due:null },
+      { taskId:"869cr5thj", title:"T136 - PLP 12.1 - M2M Guided filtering iteration", client:"Q2 2026", status:"results shared", minutes:43335, due:null },
+      { taskId:"869cqqh1j", title:"T135 - PDP 7.1 - Sticky ATB Re-run", client:"Q2 2026", status:"results shared", minutes:43335, due:null },
+      { taskId:"869c4egrh", title:"T125 - Multipage 6.1 - Compare Grid - Total site", client:"Q1 2026", status:"results in progress", minutes:53491, due:null },
+      { taskId:"869c3qej8", title:"T124 - PDP 38.0 - Carousels V2 - Product Card Content", client:"Q3 2026", status:"results ready", minutes:20414, due:null },
+      { taskId:"869auqc51", title:"Weekly Squad Meeting (recurring)", client:"Meetings & Milestones", status:"to do", minutes:3477, due:"2026-08-31" },
+      { taskId:"869dd4yd9", title:"QA Fixes", client:"Q1 2026", status:"pending", minutes:70085, due:"2026-05-26" },
+      { taskId:"869cq4krg", title:"Build Placeholder", client:"Q1 2026", status:"pending", minutes:70085, due:null },
+      { taskId:"869ckxzm5", title:"Build Placeholder", client:"Q1 2026", status:"pending", minutes:70085, due:null },
+      { taskId:"869ckmtpj", title:"Build Placeholder", client:"Q1 2026", status:"pending", minutes:70085, due:"2026-04-02" },
+      { taskId:"869cfecvj", title:"Client QA (co-assignee Jacob Nicholls)", client:"Q1 2026", status:"pending", minutes:70085, due:"2026-03-18" },
+      { taskId:"869cfectz", title:"Build", client:"Q1 2026", status:"pending", minutes:70085, due:"2026-03-20" },
+      { taskId:"869c9fk73", title:"Proposed QA Fixes", client:"Q1 2026", status:"pending", minutes:70084, due:"2026-03-16" },
+      { taskId:"869c8h51b", title:"Proposed QA fixes", client:"Q1 2026", status:"pending", minutes:70085, due:"2026-03-30" },
+      { taskId:"869c1bz9j", title:"Build Placeholder", client:"Q1 2026", status:"pending", minutes:70085, due:"2026-02-19" },
+      { taskId:"869bz8w1v", title:"Build", client:"Q1 2026", status:"pending", minutes:70085, due:"2026-02-03" },
+      { taskId:"869bq5hu8", title:"Build Placeholder", client:"Q1 2026", status:"pending", minutes:70085, due:"2026-01-19" },
+      { taskId:"869bq5hdn", title:"Build Placeholder", client:"Q1 2026", status:"pending", minutes:70085, due:"2026-01-14" },
+      { taskId:"869bq626q", title:"D.com vs MFE fix", client:"Q2 2025", status:"pending", minutes:70087, due:"2026-01-09" },
+      { taskId:"869avdfv4", title:"Migration to new API", client:"Q2 2025", status:"pending", minutes:70087, due:"2025-10-21" },
+      { taskId:"869c4ge2w", title:"Build", client:"Q4 2025", status:"pending", minutes:70086, due:"2026-02-13" },
+      { taskId:"869c4ge1v", title:"Proposed QA Fixes", client:"Q4 2025", status:"pending", minutes:70086, due:"2026-02-16" },
+      { taskId:"869c4ge18", title:"Proposed QA Fixes", client:"Q4 2025", status:"pending", minutes:70086, due:"2026-02-17" },
+      { taskId:"869bfbrfq", title:"Proposed QA Fixes", client:"Q4 2025", status:"pending", minutes:70086, due:"2025-12-16" },
+      { taskId:"869bfbr68", title:"Build", client:"Q4 2025", status:"pending", minutes:70086, due:"2025-12-12" },
+      { taskId:"869bfbr60", title:"Build Plan", client:"Q4 2025", status:"pending", minutes:70086, due:"2025-12-12" },
+      { taskId:"869are7w7", title:"Build Placeholder", client:"Q4 2025", status:"pending", minutes:70086, due:"2025-11-28" },
+      { taskId:"869are7tt", title:"Feasibility and Scope Review", client:"Q4 2025", status:"pending", minutes:70086, due:"2025-11-24" },
+    ]
+  },
+  { dev:"Kerrie Mcivor", text:"10 tickets on file — real post-build work sitting in Results stages, plus a handful of aging pending placeholders.",
+    tickets:[
+      { taskId:"869dmzppr", title:"Build", client:"POC 1 (1/2-30/4)", status:"pending", minutes:75778, due:"2026-06-15" },
+      { taskId:"869cr5tk1", title:"Build Placeholder", client:"Q2 2026", status:"pending", minutes:70085, due:"2026-04-29" },
+      { taskId:"869cnd9nz", title:"T133 - PDP 8.1 - RM to M2M iteration", client:"Q1 2026", status:"results shared", minutes:43334, due:null },
+      { taskId:"869cc6ycb", title:"Proposed QA Fixes", client:"Q1 2026", status:"pending", minutes:70084, due:"2026-03-20" },
+      { taskId:"869cc6ybf", title:"Build", client:"Q1 2026", status:"pending", minutes:70085, due:"2026-04-02" },
+      { taskId:"869c751nr", title:"T128 - PDP 39.0 - M2M - Sample Drawer", client:"Q1 2026", status:"results ready", minutes:20414, due:null },
+      { taskId:"869bx74kr", title:"Proposed QA Fixes", client:"Q3 2025", status:"pending", minutes:70086, due:"2026-02-16" },
+      { taskId:"869bx74hx", title:"Proposed QA Fixes", client:"Q3 2025", status:"pending", minutes:70086, due:"2026-02-11" },
+      { taskId:"869b4bu52", title:"Proposed QA Fixes", client:"Q4 2025", status:"pending", minutes:70086, due:"2026-01-07" },
+      { taskId:"869aeedzd", title:"T83 - PDP 30.0 - M2M - Add to Bag Modal Recommendations", client:"Q3 2025", status:"results shared", minutes:43334, due:null },
+    ]
+  },
+  { dev:"Kiran Kumaravel Pillai", text:"20 tickets on file — heavily loaded pre-brief on Blue Nile, plus older M&S/Waitrose/TSC work spread across results, client QA and queued stages.",
+    tickets:[
+      { taskId:"869edqu7p", title:"Quiz remains on page when clicking on \"Lab-Grown\"", client:"Blue Nile Backlog", status:"pending", minutes:22962, due:null },
+      { taskId:"869edqtay", title:"Experience separate to Collections, needs to be built on top", client:"Blue Nile Backlog", status:"pending", minutes:22962, due:null },
+      { taskId:"869edqek5", title:"Selected tags are blue in design", client:"Blue Nile Backlog", status:"pending", minutes:22977, due:null },
+      { taskId:"869edqct5", title:"Links hover colour is default system blue", client:"Blue Nile Backlog", status:"pending", minutes:22979, due:null },
+      { taskId:"869edpdqp", title:"Question design imagery in different location to build brief", client:"Blue Nile Backlog", status:"pending", minutes:23021, due:null },
+      { taskId:"869e54n0k", title:"Exp 6.0 - P4 - Build", client:"Blue Nile Backlog", status:"pending", minutes:51815, due:"2026-08-03" },
+      { taskId:"869dygxak", title:"Exp 6.0 - P4 - Diamond Quiz Integration", client:"Blue Nile Backlog", status:"stalled/on hold", minutes:15739, due:"2026-08-04" },
+      { taskId:"869dkyxce", title:"Build", client:"POC 1 (1/2-30/4)", status:"pending", minutes:75778, due:"2026-06-11" },
+      { taskId:"869djgymv", title:"GG010 - PDP 4.1 - ShopNext Iteration", client:"POC 1 (1/2-30/4)", status:"results in progress", minutes:34696, due:"2026-06-11" },
+      { taskId:"869dgzjfz", title:"GG004 - PDP 4.0 - ShopNext Color/Price/Stock Redesign - Mobile", client:"POC 1 (1/2-30/4)", status:"results ready", minutes:75778, due:"2026-06-09" },
+      { taskId:"869dbg42k", title:"Proposed QA Fixes", client:"Q3 2026", status:"pending", minutes:70367, due:"2026-06-09" },
+      { taskId:"869cfdtg6", title:"GG004 - PDP 4.0 - ShopNext Color/Price/Stock Redesign - Desktop", client:"POC 1 (1/2-30/4)", status:"results in progress", minutes:75783, due:"2026-06-09" },
+      { taskId:"869cdm5d3", title:"UK - PDP - 5.0 - Retaining ways to style it rail", client:"M&S Q2 26 Sprint 1", status:"client qa", minutes:92149, due:"2026-05-01" },
+      { taskId:"869cgxvqm", title:"UK - PDP - 5.0 - Build Placeholder", client:"M&S Q2 26 Sprint 1", status:"queued", minutes:92149, due:"2026-04-10" },
+      { taskId:"869d6b94g", title:"T03 - PDP 2.0 - Retail Media Brand block (waitrose cellar)", client:"POC 1 (11/5-26/7)", status:"results shared", minutes:22908, due:null },
+      { taskId:"869bz5ybj", title:"Introducing Challenger A from previous experience as control", client:"POC 1 (11/5-26/7)", status:"pending", minutes:63569, due:"2026-01-30" },
+      { taskId:"869bwn5dr", title:"Build", client:"Q1 2026 (1/1-31/3)", status:"queued", minutes:81920, due:"2026-01-23" },
+      { taskId:"869bq4yqr", title:"Team session thinking of iterations", client:"POC 1 (11/5-26/7)", status:"pending", minutes:63569, due:"2026-01-14" },
+      { taskId:"869bjyy4x", title:"Build", client:"Q4 2025", status:"pending", minutes:70085, due:"2025-12-31" },
+      { taskId:"8699gbvce", title:"Additional variant build", client:"Future Faster 2 (1/4-31/7)", status:"stalled/on hold", minutes:75780, due:"2025-07-18" },
+    ]
+  },
+  { dev:"Maxwell Kirwin", text:"3 tickets on file — early-pipeline Blue Nile work plus one aging Client QA item.",
+    tickets:[
+      { taskId:"869eamdzp", title:"Design", client:"Blue Nile Backlog", status:"pending", minutes:32990, due:"2026-07-30" },
+      { taskId:"869e94z5t", title:"12.0 - Redesign - Homepage", client:"Blue Nile Backlog", status:"proposal", minutes:8595, due:"2026-09-16" },
+      { taskId:"869by9p1m", title:"Product Information Sheet (co-assignee Natalie Ball-Firth)", client:"Q1 2026", status:"client qa", minutes:80365, due:"2026-01-29" },
+    ]
+  },
+  { dev:"Robyn Bowman", text:"Only 3 tickets on file, all queued/pending with no recent movement — very light current load, worth checking in on.",
+    tickets:[
+      { taskId:"869cnhty0", title:"Build", client:"Q1 2026", status:"queued", minutes:81919, due:"2026-03-31" },
+      { taskId:"869cc91nz", title:"Build", client:"Q1 2026", status:"queued", minutes:81920, due:"2026-03-05" },
+      { taskId:"869cc91be", title:"T88 - Build", client:"Q2 2026", status:"pending", minutes:70367, due:"2026-03-06" },
+    ]
+  },
+  { dev:"Scott Nicholson", text:"34 tickets on file — working more in a planning/lead capacity (Platform discussions, dev guidelines, mainstream identification) alongside a long tail of aging TSC/FFM sprint tasks.",
+    stale:"Rows 12-21 below (Sep-Oct 2025 due dates, status Pending) look like dead sprint artifacts that were never closed out — worth flagging to Scott directly rather than counting as current load.",
+    tickets:[
+      { taskId:"869e9q79t", title:"Redesign 3.0 - Collections", client:"Backlog", status:"stalled/on hold", minutes:21778, due:null },
+      { taskId:"869d45jj3", title:"Build Plan", client:"Backlog", status:"pending", minutes:53152, due:null },
+      { taskId:"869cfmg49", title:"Discuss w/ Platform: Example components tab", client:"Projects", status:"to scope", minutes:230298, due:null },
+      { taskId:"869cfmg2y", title:"Discuss w/ Platform: \"Similar Builds Found\" in Aviso", client:"Projects", status:"to scope", minutes:230298, due:null },
+      { taskId:"869cfmg1q", title:"Discuss w/ Platform: Require AI review before push", client:"Projects", status:"to scope", minutes:230299, due:null },
+      { taskId:"869cfmfr6", title:"Discuss w/ Platform: Autogenerate documentation", client:"Projects", status:"to scope", minutes:230299, due:null },
+      { taskId:"869cfmf0f", title:"Discuss w/ Platform: dev guidelines into AI review prompt", client:"Projects", status:"to scope", minutes:230300, due:null },
+      { taskId:"869cfme7t", title:"Hold a session with devs to introduce dev guidelines", client:"Projects", status:"to scope", minutes:230301, due:null },
+      { taskId:"869cfmcqz", title:"Write up Developer Guidelines in Tech Wiki", client:"Projects", status:"ready for review", minutes:201497, due:null },
+      { taskId:"869cfhn3f", title:"Developer Guidelines", client:"Projects", status:"to scope", minutes:230449, due:null },
+      { taskId:"869cekvun", title:"Build", client:"FFM", status:"pending", minutes:53138, due:"2026-04-24" },
+      { taskId:"869cckz3y", title:"TOF1.1 QA fixes", client:"FF26 Sprint 1", status:"pending", minutes:53139, due:"2026-03-05" },
+      { taskId:"869c9fba9", title:"MOF1.2 QA fixes", client:"FF26 Sprint 1", status:"pending", minutes:53139, due:"2026-03-04" },
+      { taskId:"869bzay1z", title:"TSC Fulfilment Meeting (recurring)", client:"Meetings & Milestones", status:"to do", minutes:17877, due:"2026-08-21" },
+      { taskId:"869bzaxnf", title:"TSC BOF Meeting (recurring)", client:"Meetings & Milestones", status:"to do", minutes:12116, due:"2026-08-25" },
+      { taskId:"869bzaxjj", title:"TSC MOF Meeting (recurring)", client:"Meetings & Milestones", status:"to do", minutes:290866, due:null },
+      { taskId:"869bvmqnq", title:"Mainstream Identification - Hertz", client:"Projects", status:"to scope", minutes:304029, due:null },
+      { taskId:"869bvmqk8", title:"Mainstream Identification - Wickes", client:"Projects", status:"to scope", minutes:304029, due:null },
+      { taskId:"869brdp5j", title:"SPA remove from mainstreams & tests", client:"Meetings & Milestones", status:"to do", minutes:315542, due:"2026-01-13" },
+      { taskId:"869br22wm", title:"Experience Launch", client:"FF26 Sprint 1", status:"pending", minutes:53139, due:"2026-03-12" },
+      { taskId:"869br22v7", title:"MOF1.2 QA Fixes", client:"FF26 Sprint 1", status:"pending", minutes:53139, due:"2026-02-27" },
+      { taskId:"869b08mhj", title:"BOF - Shipping costs cart day 2", client:"Future Faster Complete", status:"pending", minutes:53134, due:"2025-10-31" },
+      { taskId:"869b08mgk", title:"BOF - Shipping costs cart day 1", client:"Future Faster Complete", status:"pending", minutes:53134, due:"2025-10-30" },
+      { taskId:"869ay3n6c", title:"TSC Delivery charge Build day 1", client:"Backlog", status:"pending", minutes:53182, due:"2025-10-29" },
+      { taskId:"869axv140", title:"BOF Check out Button - Client QA", client:"Future Faster Complete", status:"pending", minutes:53134, due:"2025-10-29" },
+      { taskId:"869at9m83", title:"BOF Check out Button - Client QA", client:"Future Faster Complete", status:"pending", minutes:53134, due:"2025-10-23" },
+      { taskId:"869ar0x8t", title:"XF5.3 SPA fix", client:"Backlog", status:"pending", minutes:53181, due:"2025-10-08" },
+      { taskId:"869ap559q", title:"XF5.3 SPA fix", client:"Backlog", status:"pending", minutes:53181, due:"2025-09-30" },
+      { taskId:"869am0exn", title:"XF5.3 MOF rebuild", client:"Backlog", status:"pending", minutes:53181, due:"2025-09-26" },
+      { taskId:"869ahkme4", title:"XF5.3 MOF rebuild", client:"Backlog", status:"pending", minutes:53181, due:"2025-09-24" },
+      { taskId:"869a4cdyt", title:"QA Fixes", client:"Backlog", status:"pending", minutes:53181, due:"2025-09-10" },
+      { taskId:"869a4cdxd", title:"XF5.3 Shift to BOPIS", client:"Backlog", status:"stalled/on hold", minutes:53181, due:null },
+      { taskId:"8699bahcu", title:"Gathering user feedback from within Aviso", client:"FlowState (Aviso Redux)", status:"in progress", minutes:574735, due:null },
+      { taskId:"8698x6w4p", title:"More dynamic replacement for experience documentation", client:"FlowState (Aviso Redux)", status:"blocked", minutes:563040, due:null },
+    ]
+  },
+  { dev:"Anders Torrild", text:"7 tickets on file — active internal Build-space platform work plus one blocked client ticket.",
+    tickets:[
+      { taskId:"869e5qvb8", title:"[Refurbs GG] Marketing: Old experience visible first when loading", client:"Defects, Changes & QA", status:"blocked", minutes:38965, due:null },
+      { taskId:"869c8r61e", title:"Ticket desk AI", client:"Projects", status:"to scope", minutes:254712, due:null },
+      { taskId:"869c8r5zh", title:"Incident response fire drills", client:"Projects", status:"to scope", minutes:254712, due:null },
+      { taskId:"869amz99m", title:"Export usage stats from PagerDuty", client:"Misc", status:"to scope", minutes:468201, due:null },
+      { taskId:"869a00gwf", title:"Migrate to Checkly Playwright suites", client:"QA & Testing", status:"in progress", minutes:534211, due:null },
+      { taskId:"8697rdy9p", title:"Data testing (co-assigned)", client:"QA & Testing", status:"to scope", minutes:815292, due:null },
+      { taskId:"8697rdwy9", title:"Deployment controls (co-assigned)", client:"FlowState (Aviso Redux)", status:"in progress", minutes:656496, due:null },
+    ]
+  },
+];
+
+const protectedStatuses = new Set(["stalled/on hold","blocked","in progress"]);
+function titleCaseStatus(s){
+  return s.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1));
+}
+
+// Render stage breakdown bars in board order
+const stageCounts = {};
+stageOrder.forEach(s=> stageCounts[s]=0);
+tickets.forEach(t=>{ if(stageCounts[t.stage]!==undefined) stageCounts[t.stage]++; });
+const maxCount = Math.max(...Object.values(stageCounts), 1);
+const barsEl = document.getElementById("stageBars");
+const legendEl = document.getElementById("stageLegend");
+
+let activeFilter = null;
+
+function setFilter(stage){
+  activeFilter = (activeFilter === stage) ? null : stage;
+  renderStageBars();
+  renderDevGroups();
+}
+
+function renderStageBars(){
+  barsEl.innerHTML = "";
+  legendEl.innerHTML = "";
+  stageOrder.forEach(s=>{
+    const row = document.createElement("div");
+    row.className = "stage-row" + (activeFilter === s ? " active" : "");
+    const pct = Math.round((stageCounts[s]/maxCount)*100);
+    row.innerHTML = `<div class="stage-name">${s}</div><div class="stage-track"><div class="stage-fill" style="width:${pct}%;background:${stageRamp[s]};"></div></div><div class="count">${stageCounts[s]}</div>`;
+    row.addEventListener("click", ()=> setFilter(s));
+    barsEl.appendChild(row);
+
+    const span = document.createElement("span");
+    span.className = activeFilter === s ? "active" : "";
+    span.innerHTML = `<i style="background:${stageRamp[s]}"></i>${s}`;
+    span.addEventListener("click", ()=> setFilter(s));
+    legendEl.appendChild(span);
+  });
+}
+
+function fmtTime(min){
+  const days = Math.floor(min/1440);
+  const hrs = Math.floor((min%1440)/60);
+  if(days >= 1) return `${days}d ${hrs}h`;
+  const m = min%60;
+  return `${hrs}h ${m}m`;
+}
+
+const TODAY = new Date("2026-08-20T09:00:00Z");
+function dueInfo(dueStr){
+  if(!dueStr) return { text: "No due date", cls: "due-ok" };
+  const due = new Date(dueStr+"T00:00:00Z");
+  const diffDays = Math.round((due - TODAY) / 86400000);
+  const label = due.toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
+  if(diffDays < 0) return { text: `${label}`, sub:`${Math.abs(diffDays)}d overdue`, cls: "due-overdue" };
+  if(diffDays === 0) return { text: `${label}`, sub:`due today`, cls: "due-today" };
+  if(diffDays <= 3) return { text: `${label}`, sub:`due soon`, cls: "due-soon" };
+  return { text: label, sub:null, cls: "due-ok" };
+}
+
+// Group tickets by developer, in devOrder — re-rendered whenever the stage filter changes
+const groupsEl = document.getElementById("devGroups");
+const devGroupsSub = document.getElementById("devGroupsSub");
+const devGroupsSubDefault = devGroupsSub.textContent;
+
+function renderDevGroups(){
+  groupsEl.innerHTML = "";
+
+  if(activeFilter){
+    const banner = document.createElement("div");
+    banner.className = "filter-banner";
+    banner.innerHTML = `Showing only <span style="text-transform:none;">${activeFilter}</span> tickets<button>Clear filter</button>`;
+    banner.querySelector("button").addEventListener("click", ()=> setFilter(activeFilter));
+    groupsEl.appendChild(banner);
+    devGroupsSub.textContent = `Filtered to ${activeFilter} — click the stage again, or "Clear filter" above, to see everything.`;
+  } else {
+    devGroupsSub.textContent = devGroupsSubDefault;
+  }
+
+  const visibleTickets = activeFilter ? tickets.filter(t=>t.stage===activeFilter) : tickets;
+
+  devOrder.forEach(dev=>{
+    const rows = visibleTickets.filter(t=>t.dev===dev);
+    if(!rows.length) return;
+    const group = document.createElement("div");
+    group.className = "dev-group";
+
+    const header = document.createElement("div");
+    header.className = "dev-group-header";
+    header.innerHTML = `<span class="dev-name">${dev}</span><span class="dev-count">${rows.length} ticket${rows.length>1?"s":""}</span>`;
+    group.appendChild(header);
+
+    rows.sort((a,b)=>b.minutes-a.minutes).forEach(t=>{
+      const stuck = t.minutes > 20160;
+      const d = dueInfo(t.due);
+      const row = document.createElement("div");
+      row.className = "ticket-row";
+      row.innerHTML = `
+        <div>
+          <span class="col-label">Ticket</span>
+          <a class="task-title" href="${CLICKUP_BASE}${t.taskId}" target="_blank" rel="noopener">${t.title}</a>
+          ${t.parent ? `<br><a class="parent-link" href="${CLICKUP_BASE}${t.parent.id}" target="_blank" rel="noopener">${t.parent.title}</a>` : ""}
+          ${t.flagNote ? `<div class="inherited-note">${t.flagNote}</div>` : ""}
+        </div>
+        <div><span class="col-label">Client</span><span class="client-tag">${t.client}</span></div>
+        <div><span class="col-label">Stage</span><span class="pill" style="background:${stageRamp[t.stage]};color:${stageText(t.stage)}">${t.stage}</span></div>
+        <div class="time-cell"><span class="col-label">Time in stage</span>${fmtTime(t.minutes)}${stuck ? '<div class="stuck-badge">STUCK &gt;14d</div>' : ""}</div>
+        <div>
+          <span class="col-label">Due</span>
+          <div class="tshirt-badge">${t.tshirt || "No size set"}</div>
+          ${t.tshirtInherited ? `<div class="inherited-note">↳ from parent</div>` : ""}
+          <div class="due-cell ${d.cls}" style="margin-top:5px;">${d.text}${d.sub ? `<span class="flag-note">${d.sub}</span>`:""}${t.dueInherited?'<div class="inherited-note">↳ from parent</div>':""}</div>
+        </div>
+      `;
+      group.appendChild(row);
+    });
+
+    groupsEl.appendChild(group);
+  });
+}
+
+renderStageBars();
+renderDevGroups();
+
+const otherEl = document.getElementById("otherWorkGrid");
+otherWork.forEach(o=>{
+  const div = document.createElement("div");
+  div.className = "other-work-group";
+  const sortedTickets = [...o.tickets].sort((a,b)=>b.minutes-a.minutes);
+  const rowsHtml = sortedTickets.map(t=>{
+    const d = dueInfo(t.due);
+    const protectedStatus = protectedStatuses.has(t.status);
+    return `
+      <div class="other-work-ticket">
+        <div><span class="col-label">Ticket</span><a class="task-title" href="${CLICKUP_BASE}${t.taskId}" target="_blank" rel="noopener">${t.title}</a></div>
+        <div><span class="col-label">Client</span><span class="client-tag">${t.client}</span></div>
+        <div><span class="col-label">Status</span><span class="status-pill${protectedStatus ? " protected":""}">${titleCaseStatus(t.status)}</span></div>
+        <div class="time-cell"><span class="col-label">Time in status</span>${fmtTime(t.minutes)}</div>
+        <div class="due-cell ${d.cls}"><span class="col-label">Due</span>${d.text}${d.sub ? `<span class="flag-note">${d.sub}</span>`:""}</div>
+      </div>`;
+  }).join("");
+  div.innerHTML = `
+    <div class="dev-name">${o.dev}</div>
+    <div class="other-work-text">${o.text}</div>
+    <details class="other-work-list">
+      <summary>${o.tickets.length} ticket${o.tickets.length>1?"s":""} — click to view</summary>
+      <div class="other-work-list-inner">
+        <div class="other-work-header"><div>Ticket</div><div>Client</div><div>Status</div><div>Time in status</div><div>Due</div></div>
+        ${rowsHtml}
+      </div>
+    </details>
+    ${o.stale ? `<div class="stale-note">${o.stale}</div>` : ""}
+  `;
+  otherEl.appendChild(div);
+});
+</script>
+
+</body>
+</html>
